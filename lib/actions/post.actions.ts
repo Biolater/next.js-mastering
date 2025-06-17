@@ -2,24 +2,50 @@
 
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import { z } from "zod";
 
-export const createPost = async (prevState: any, formData: FormData) => {
-    try {
-        const title = formData.get("title");
-        const content = formData.get("content");
+// Define validation schema
+const createPostSchema = z.object({
+  title: z.string().min(1, "Title is required").max(100, "Title too long"),
+  content: z.string().min(1, "Content is required").max(1000, "Content too long"),
+});
 
-        if (!title || !content) {
-            return { success: false, error: "Title and content are required" };
-        }
+type FormState = {
+  success: boolean;
+  message?: string;
+  error?: string;
+  fieldErrors?: Record<string, string[]>;
+};
 
-        await prisma.post.create({
-            data: { title: title.toString(), content: content.toString() },
-        });
+export const createPost = async (
+  prevState: FormState | null, 
+  formData: FormData
+): Promise<FormState> => {
+  try {
+    const rawData = {
+      title: formData.get("title"),
+      content: formData.get("content"),
+    };
 
-        return { success: true, message: "Post created successfully" };
-
-    } catch (error) {
-        console.error("Error creating post:", error);
-        return { success: false, error: "Failed to create post" };
+    // Validate with Zod
+    const validatedData = createPostSchema.safeParse(rawData);
+    
+    if (!validatedData.success) {
+      return {
+        success: false,
+        error: "Validation failed",
+        fieldErrors: validatedData.error.flatten().fieldErrors,
+      };
     }
+
+    await prisma.post.create({
+      data: validatedData.data,
+    });
+
+    return { success: true, message: "Post created successfully" };
+
+  } catch (error) {
+    console.error("Error creating post:", error);
+    return { success: false, error: "Failed to create post" };
+  }
 };

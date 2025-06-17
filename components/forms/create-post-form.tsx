@@ -30,7 +30,15 @@ const CreatePostForm = () => {
         <form action={formAction} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="title">Title</Label>
-            <Input id="title" name="title" placeholder="Enter post title" />
+            <Input 
+              id="title" 
+              name="title" 
+              placeholder="Enter post title"
+              className={state?.fieldErrors?.title ? "border-red-500" : ""}
+            />
+            {state?.fieldErrors?.title && (
+              <p className="text-sm text-red-500">{state.fieldErrors.title[0]}</p>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="content">Content</Label>
@@ -38,10 +46,14 @@ const CreatePostForm = () => {
               id="content"
               name="content"
               placeholder="Enter post content"
+              className={state?.fieldErrors?.content ? "border-red-500" : ""}
             />
+            {state?.fieldErrors?.content && (
+              <p className="text-sm text-red-500">{state.fieldErrors.content[0]}</p>
+            )}
           </div>
           <SubmitButton />
-    </form>
+        </form>
       </CardContent>
     </Card>
   );
