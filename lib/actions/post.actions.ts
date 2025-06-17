@@ -1,8 +1,9 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
+
 import { z } from "zod";
+import { revalidateTag } from "next/cache";
 
 // Define validation schema
 const createPostSchema = z.object({
@@ -18,7 +19,7 @@ type FormState = {
 };
 
 export const createPost = async (
-  prevState: FormState | null, 
+  prevState: FormState | null,
   formData: FormData
 ): Promise<FormState> => {
   try {
@@ -29,7 +30,7 @@ export const createPost = async (
 
     // Validate with Zod
     const validatedData = createPostSchema.safeParse(rawData);
-    
+
     if (!validatedData.success) {
       return {
         success: false,
@@ -41,6 +42,8 @@ export const createPost = async (
     await prisma.post.create({
       data: validatedData.data,
     });
+
+    revalidateTag("posts-tag");
 
     return { success: true, message: "Post created successfully" };
 

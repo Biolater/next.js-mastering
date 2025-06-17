@@ -1,19 +1,23 @@
-export const posts = Array.from({ length: 100 }, (_, i) => ({
-    id: i + 1,
-    title: `Post ${i + 1}`,
-    content: `Content for post ${i + 1}`,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-}));
+import { unstable_cache } from "next/cache";
+import { prisma } from "../prisma";
 
-
-
-export const getPosts = async () => {
-    return posts;
-};
-
-export const getPostById = async (id: number) => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return posts.find(post => post.id === id);
-}
-
+export const getPosts = unstable_cache(
+    async () => {
+        try {
+            const posts = await prisma.post.findMany({
+                orderBy: {
+                    createdAt: "desc",
+                },
+            });
+            return posts;
+        } catch (err) {
+            console.error("Error fetching posts:", err);
+            return [];
+        }
+    },
+    ["posts"], // Cache key - unique identifier
+    {
+        revalidate: 60, // Time-based: revalidate every 60 seconds
+        tags: ["posts-tag"], // Tag-based: can be invalidated on-demand
+    }
+);

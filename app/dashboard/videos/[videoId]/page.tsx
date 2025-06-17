@@ -1,13 +1,13 @@
-import { getPostById } from "@/lib/data/getPosts";
-
+/* import { getVideoById } from "@/lib/data/getVideos";
+ */
 const Video = async ({ params }: { params: Promise<{ videoId: string }> }) => {
   const { videoId } = await params;
-  const post = await getPostById(parseInt(videoId));
-  return (
+  /*   const video = await getVideoById(parseInt(videoId));
+   */ return (
     <div>
-      <h1>Video {videoId}</h1>
-      <h1>{post?.title}</h1>
-      <p>{post?.content}</p>
+      {/*       <h1>Video {videoId}</h1>
+      <h1>{video?.title}</h1>
+      <p>{video?.description}</p> */}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Settings, Video, User } from "lucide-react";
+import { Home, Settings, Video, User, FileText } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -31,6 +31,11 @@ const items = [
     title: "Videos",
     url: "/dashboard/videos",
     icon: Video,
+  },
+  {
+    title: "Posts",
+    url: "/dashboard/posts",
+    icon: FileText,
   },
 ];
 

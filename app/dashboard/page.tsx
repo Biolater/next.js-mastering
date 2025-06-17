@@ -3,7 +3,7 @@ import SortingButtons from "@/components/sorting-buttons";
 const DashboardIndex = async ({
   searchParams,
 }: {
-  searchParams: { sort: string };
+  searchParams: Promise<{ sort: string }>;
 }) => {
   const params = await searchParams;
   return (

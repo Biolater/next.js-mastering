@@ -6,16 +6,17 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { createPost } from "@/lib/actions/post.actions";
 import { SubmitButton } from "@/components/submit-button";
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 const CreatePostForm = () => {
   const [state, formAction] = useActionState(createPost, null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    console.log(state);
     if (state?.success) {
       toast.success(state.message);
+      formRef.current?.reset(); // Reset form after success
     } else if (state?.success === false) {
       toast.error(state.error);
     }
@@ -27,7 +28,7 @@ const CreatePostForm = () => {
         <CardTitle>Create Post</CardTitle>
       </CardHeader>
       <CardContent>
-        <form action={formAction} className="space-y-4">
+        <form ref={formRef} action={formAction} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="title">Title</Label>
             <Input 
