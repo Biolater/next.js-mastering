@@ -1,16 +1,24 @@
-import { getPosts } from "@/lib/data/getPosts";
+import {
+  getPostsWithCache,
+  getPostsFromAPIWithCache,
+  getPostsFromAPI,
+} from "@/lib/data/getPosts";
+import PostsClient from "./posts-client";
+
+interface Post {
+  id: number;
+  title: string;
+  content: string;
+  userId: number;
+}
 
 const Posts = async () => {
-  const posts = await getPosts();
-  return (
-    <div className="flex flex-wrap gap-4">
-      {posts.map((post) => (
-        <div key={post.id}>
-          <h2>{post.title}</h2>
-        </div>
-      ))}
-    </div>
-  );
+  const start = performance.now();
+    const posts: Post[] = await getPostsFromAPIWithCache();
+  const end = performance.now();
+  const fetchTime = end - start;
+
+  return <PostsClient posts={posts} fetchTime={fetchTime} />;
 };
 
 export default Posts;

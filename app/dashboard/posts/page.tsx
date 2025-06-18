@@ -10,7 +10,7 @@ const PostsIndex = () => {
       <h1 className="text-2xl font-bold">Posts</h1>
       <ErrorBoundary fallback={<div>Error loading posts</div>}>
         <Suspense fallback={<div>Loading Posts...</div>}>
-        <Posts />
+          <Posts />
         </Suspense>
       </ErrorBoundary>
     </main>
