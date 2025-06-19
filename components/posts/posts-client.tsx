@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import DeletePostButton from "./delete-post-button";
 import PerformanceMonitor from "../performance-monitor";
+import { useRouter } from "next/navigation";
 
 interface Post {
   id: number;
@@ -30,6 +31,7 @@ export default function PostsClient({ posts, fetchTime }: PostsClientProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [shouldError, setShouldError] = useState(false);
 
+  const router = useRouter();
   useEffect(() => {
     const startRender = performance.now();
 
@@ -69,6 +71,7 @@ export default function PostsClient({ posts, fetchTime }: PostsClientProps) {
         {posts.map((post) => (
           <Card
             key={post.id}
+            onClick={() => router.push(`/dashboard/posts/${post.id}`)}
             className="group transition-all duration-200 hover:shadow-md hover:scale-[1.02]"
           >
             <CardHeader>
