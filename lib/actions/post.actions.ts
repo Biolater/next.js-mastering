@@ -28,46 +28,46 @@ export const createPost = async (
   formData: FormData
 ): Promise<FormState> => {
   const cookieStore = await cookies();
-  try {
-    const rawData = {
-      title: formData.get("title"),
-      content: formData.get("content"),
+  
+  const rawData = {
+    title: formData.get("title"),
+    content: formData.get("content"),
+  };
+
+  // Validate with Zod
+  const validatedData = createPostSchema.safeParse(rawData);
+
+  if (!validatedData.success) {
+    return {
+      success: false,
+      error: "Validation failed",
+      fieldErrors: validatedData.error.flatten().fieldErrors,
+      data: {
+        title: rawData.title as string,
+        content: rawData.content as string,
+      },
     };
+  }
 
-    // Validate with Zod
-    const validatedData = createPostSchema.safeParse(rawData);
-
-    if (!validatedData.success) {
-      return {
-        success: false,
-        error: "Validation failed",
-        fieldErrors: validatedData.error.flatten().fieldErrors,
-        data: {
-          title: rawData.title as string,
-          content: rawData.content as string,
-        },
-      };
-    }
-
-    await prisma.post.create({
-      data: validatedData.data,
-    });
-
-    cookieStore.set("post-created", "true");
-
-    revalidateTag("posts-tag");
-
-    return { success: true, message: "Post created successfully" };
-
-  } catch (error) {
+  const result = await prisma.post.create({
+    data: validatedData.data,
+  }).catch((error) => {
     console.error("Error creating post:", error);
+    return null;
+  });
+
+  if (!result) {
     return { success: false, error: "Failed to create post" };
   }
+
+  cookieStore.set("post-created", "true");
+  revalidateTag("posts-tag");
+
+  return { success: true, message: "Post created successfully" };
 };
 
-export const deletePost = async (prevState: FormState | null, formData: FormData) => {
+export const deletePost = async (prevState: FormState | null, formData: FormData): Promise<FormState> => {
   const id = formData.get("id");
-
   const cookieStore = await cookies();
 
   if (!id) {
@@ -78,17 +78,20 @@ export const deletePost = async (prevState: FormState | null, formData: FormData
     return { success: false, error: "Invalid post ID" };
   }
 
-  try {
-    await prisma.post.delete({
-      where: {
-        id,
-      },
-    });
-    revalidateTag("posts-tag");
-    cookieStore.delete("post-created");
-    return { success: true, message: "Post deleted successfully" };
-  } catch (error) {
+  const result = await prisma.post.delete({
+    where: {
+      id,
+    },
+  }).catch((error) => {
     console.error("Error deleting post:", error);
+    return null;
+  });
+
+  if (!result) {
     return { success: false, error: "Failed to delete post" };
   }
+
+  revalidateTag("posts-tag");
+  cookieStore.delete("post-created");
+  return { success: true, message: "Post deleted successfully" };
 }

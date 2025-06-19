@@ -24,14 +24,15 @@ interface PostsClientProps {
   fetchTime: number;
 }
 
-const PostsClient = ({ posts, fetchTime }: PostsClientProps) => {
+export default function PostsClient({ posts, fetchTime }: PostsClientProps) {
   const [renderTime, setRenderTime] = useState<number>(0);
   const [totalTime, setTotalTime] = useState<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [shouldError, setShouldError] = useState(false);
 
   useEffect(() => {
     const startRender = performance.now();
-    
+
     // Use requestAnimationFrame to measure after DOM updates
     requestAnimationFrame(() => {
       const endRender = performance.now();
@@ -41,15 +42,30 @@ const PostsClient = ({ posts, fetchTime }: PostsClientProps) => {
     });
   }, [posts, fetchTime]);
 
+  if (shouldError) {
+    throw new Error("Client-side test error for Error Boundary");
+  }
+
   return (
-    <div className="flex flex-col gap-4">
-      <PerformanceMonitor 
+    <div className="space-y-4">
+      {/* Test Error Boundary button - remove in production */}
+      <button
+        onClick={() => setShouldError(true)}
+        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+      >
+        Test Error Boundary
+      </button>
+
+      <PerformanceMonitor
         fetchTime={fetchTime}
         renderTime={renderTime}
         totalTime={totalTime}
       />
-      
-      <aside ref={containerRef} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+      <aside
+        ref={containerRef}
+        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+      >
         {posts.map((post) => (
           <Card
             key={post.id}
@@ -71,6 +87,4 @@ const PostsClient = ({ posts, fetchTime }: PostsClientProps) => {
       </aside>
     </div>
   );
-};
-
-export default PostsClient; 
+}
