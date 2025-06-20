@@ -25,7 +25,6 @@ export const getPost = async (id: string) => {
         console.error("Error fetching post:", err);
         return null;
     });
-    console.log("this is the data", data);
     if (!data) {
         return {
             success: false,

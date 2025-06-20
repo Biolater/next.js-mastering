@@ -2,6 +2,19 @@ import { getPost } from "@/lib/data/getPost";
 import { notFound } from "next/navigation";
 import React, { FC } from "react";
 
+export const generateMetadata = async ({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) => {
+  const { id } = await params;
+  const post = await getPost(id);
+  return {
+    title: post.data.title,
+    description: post.data.body,
+  };
+};
+
 const PostPage: FC<{ params: Promise<{ id: string }> }> = async ({
   params,
 }) => {
