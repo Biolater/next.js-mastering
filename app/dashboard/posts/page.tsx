@@ -1,7 +1,7 @@
 import CreatePostForm from "@/components/forms/create-post-form";
 import Posts from "@/components/posts/posts";
 import { Suspense } from "react";
-import GracefullyDegradingErrorBoundary from "../error";
+import GracefullyDegradingErrorBoundary from "../errorhandling";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
